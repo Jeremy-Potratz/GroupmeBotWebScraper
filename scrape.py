@@ -13,7 +13,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 #i can leave the scheduler on main and have everything searched at once
 #news about an update - Hunter x Hunter, Pikmin 4, BOTW 2
 #could connect to the spotify api to learn about new music i might like !!!
-# could look into my email possibly, idk if thats good tho
+# could look into my email possibly, idk if thats good though
 
 sched = BlockingScheduler()
 
