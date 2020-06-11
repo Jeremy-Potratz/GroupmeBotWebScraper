@@ -27,7 +27,7 @@ def main():
     message = ""
 
     for word in grrmPost:
-        if (word == 'winds' or word == 'winter'):
+        if (word == 'mexico' or word == 'winter'):
             message = "Possible Winds Update @ https://georgerrmartin.com/notablog/"
             command = "curl -d \'{\"text\" : \"" + message + "\", \"bot_id\" : \"fa4d9cc813bdbd0f7d192054d4\"}\' https://api.groupme.com/v3/bots/post"
 
