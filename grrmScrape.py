@@ -14,7 +14,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-@sched.scheduled_job('cron', day_of_week='sun-sat' hour=12)
+@sched.scheduled_job('interval', seconds=20)
 def main():
     url = "https://www.georgerrmartin.com/notablog/"
     page = requests.get(url)
