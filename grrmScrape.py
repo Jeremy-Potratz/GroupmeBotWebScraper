@@ -3,6 +3,7 @@ import requests
 import os
 from contextlib import closing
 from bs4 import BeautifulSoup
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 # Twilio pword - Prosp3ct601!Prosp3ct601!
 # groupme bot key - PqoB5KyzEU5BXSFmljTO7jxT4dvuWkjZmpNMYvHh
@@ -11,6 +12,9 @@ from bs4 import BeautifulSoup
 # idea on idea - then i can make a group of bots to update me on the happenings of things!!!
 # ^ that could also be handled by one main bot who has permissions to give updates about various things
 
+sched = BlockingScheduler()
+
+@sched.scheduled_job('cron', day_of_week='sun-sat' hour=12)
 def main():
     url = "https://www.georgerrmartin.com/notablog/"
     page = requests.get(url)
@@ -30,5 +34,4 @@ def main():
 
     return
 
-
-main()
+sched.start()
