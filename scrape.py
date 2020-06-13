@@ -2,7 +2,7 @@ import requests
 import os
 from bs4 import BeautifulSoup
 from apscheduler.schedulers.blocking import BlockingScheduler
-
+from datetime import datetime
 # idea - why not just make it a groupme bot so i don't have to do sms stuff
 # idea on idea - then i can make a group of bots to update me on the happenings of things!!!
 # ^ that could also be handled by one main bot who has permissions to give updates about various things
@@ -15,11 +15,11 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 # could look into my email possibly, idk if thats good though
 
 
-holder = ""
-counter = 0
+nintendoHolder = []
+grrmHolder = ""
 sched = BlockingScheduler()
 
-@sched.scheduled_job('interval', seconds=5)
+@sched.scheduled_job('interval', hours=1)
 def main():
     nintendo()
     grrm()
@@ -30,9 +30,8 @@ def main():
 
 
 def nintendo():
-    #i know this is really similar to the grrm function but i believe the two will grow more different the more i develop
-    global holder
-    global counter
+    global nintendoHolder
+    ninList = []
     url = "http://www.nintendolife.com/news"
     page = requests.get(url)
     html = BeautifulSoup(page.content, 'html.parser')
@@ -40,35 +39,40 @@ def nintendo():
 
     for title in nintendoLife:
         words = title.text.lower()
-        # gotta figure out how to get the most recent one that is new. rn i can get new ones, but also old ones 
-        if(holder != words and counter == 0):
-            if (words.find('pikmin') != -1 or words.find('breath of the wild') != -1):
-                print(words)
-                holder = words
-                print(holder)
-                message = "Possible nintendo Update @ " + url
-                command = "curl -d \'{\"text\" : \"" + message + "\", \"bot_id\" : \"fa4d9cc813bdbd0f7d192054d4\"}\' https://api.groupme.com/v3/bots/post"
-                # os.system(command)
-                return
+        if (words.find('pikmin') != -1 or words.find('breath of the wild') != -1):
+            ninList.append(words)
+    # ninlist holds all titles that have the words in them
+    # we put all the ones we have already consoled into the holderList
+    ifs = 0
+    for nin in ninList:
+        for h in nintendoHolder:
+            if nin == h:
+                ifs = 1
+        if (ifs != 1):
+            message = datetime.now().strftime("%m/%d/%Y %H:%M:%S") + " Possible Nintendo Update @ " + url
+            command = "curl -d \'{\"text\" : \"" + message + "\", \"bot_id\" : \"fa4d9cc813bdbd0f7d192054d4\"}\' https://api.groupme.com/v3/bots/post"
+            nintendoHolder.append(nin)
+            os.system(command)
+        ifs = 0
     return
 
 
 def grrm():
+    global grrmHolder
     url = "https://www.georgerrmartin.com/notablog/"
     page = requests.get(url)
     html = BeautifulSoup(page.content, 'html.parser')
     grrmPost = html.find('div', class_='post').text.lower().split()
 
-    for word in grrmPost:
-        if (word == 'winds' or word == 'winter'):
-            message = "Possible Winds Update @ " + url
-            command = "curl -d \'{\"text\" : \"" + message + "\", \"bot_id\" : \"fa4d9cc813bdbd0f7d192054d4\"}\' https://api.groupme.com/v3/bots/post"
-            os.system(command)
-            return
+    if(grrmHolder != grrmPost):
+        for word in grrmPost:
+            if (word == 'winds' or word == 'winter'):
+                grrmHolder = grrmPost
+                message = datetime.now().strftime("%m/%d/%Y %H:%M:%S") + " Possible Winds Update @ " + url
+                command = "curl -d \'{\"text\" : \"" + message + "\", \"bot_id\" : \"fa4d9cc813bdbd0f7d192054d4\"}\' https://api.groupme.com/v3/bots/post"
+                os.system(command)
+                return
     return
-
-
-# main()
 
 
 sched.start()
